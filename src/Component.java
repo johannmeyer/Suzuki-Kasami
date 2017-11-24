@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
 
 public class Component extends UnicastRemoteObject implements Component_RMI {
     
@@ -51,6 +52,7 @@ public class Component extends UnicastRemoteObject implements Component_RMI {
         if(token_present && !critical && requestNumber > grants[requesting_id]) {
             sendToken(requesting_id);
         }
+        println("Received request from " + requesting_id + "\t" + "Current requests: " + Arrays.toString(requests));
     }
 
     @Override
@@ -98,7 +100,7 @@ public class Component extends UnicastRemoteObject implements Component_RMI {
         for(int i = 1; i < numberOfProcesses; i++) {
             int checkReq = id + i;
             
-            if(checkReq > numberOfProcesses) {
+            if(checkReq >= numberOfProcesses) {
                 checkReq = checkReq - numberOfProcesses;
             }
             
