@@ -16,11 +16,12 @@ public class Component extends UnicastRemoteObject implements Component_RMI {
     private int[] grants;
     private int id;
     private int numberOfProcesses;
+    private String[] ips;
 
     /**
      * Component with id 0 is initialized with the token.
      */
-    public Component(int id, int numberOfProcesses) throws RemoteException {
+    public Component(int id, int numberOfProcesses, String[] ips) throws RemoteException {
         super();
         this.token_present = (id == 0);
         this.critical = false;
@@ -28,6 +29,7 @@ public class Component extends UnicastRemoteObject implements Component_RMI {
         this.grants = new int[numberOfProcesses];
         this.id = id;
         this.numberOfProcesses = numberOfProcesses;
+        this.ips = ips;
         
         bind();
     }
@@ -86,7 +88,8 @@ public class Component extends UnicastRemoteObject implements Component_RMI {
         // Broadcast request to all processes including current process
         // to check if they have the token
         for(int i = 0; i < numberOfProcesses; i++) {
-            Component_RMI dest = (Component_RMI) Naming.lookup(naming + i);
+            String destName = "rmi://" + ips[i] + ":1099/" + naming + i;
+            Component_RMI dest = (Component_RMI) Naming.lookup(destName);
             dest.receiveRequest(id, requests[id]);
         }
     }
@@ -96,7 +99,8 @@ public class Component extends UnicastRemoteObject implements Component_RMI {
      */
     private void sendToken(int send_id) {
         try {
-            Component_RMI dest = (Component_RMI) Naming.lookup(naming + send_id);
+            String destName = "rmi://" + ips[send_id] + ":1099/" + naming + send_id;
+            Component_RMI dest = (Component_RMI) Naming.lookup(destName);
             token_present = false;
             println("Sending token to " + send_id);
             dest.receiveToken(grants);
