@@ -11,28 +11,28 @@ public class Main {
         int numProcesses = Integer.parseInt(args[0]);
 
         Thread[] myThreads = new Thread[numProcesses];
-        try{
-            // Create Registry
-            Registry registry = LocateRegistry.createRegistry(1099);
-
-            // Create processes
-            for (int i = 0; i < numProcesses; i++)
-            {
-                Component c = new Component(i, numProcesses);
-                MyProcess p = new MyProcess(c);
-                myThreads[i] = new Thread(p);
-            }
-            
-            // Make processes send random requests
-            for (int i = 0; i < numProcesses; i++)
-            {
-                myThreads[i].start();
-            }
-            
-        } catch (Exception e) {
-            System.err.println("Could not create registry exception: " + e.toString()); 
-            e.printStackTrace(); 
-        } 
+//        try{
+//            // Create Registry
+//            Registry registry = LocateRegistry.createRegistry(1099);
+//
+//            // Create processes
+//            for (int i = 0; i < numProcesses; i++)
+//            {
+//                Component c = new Component(i, numProcesses);
+//                MyProcess p = new MyProcess(c);
+//                myThreads[i] = new Thread(p);
+//            }
+//            
+//            // Make processes send random requests
+//            for (int i = 0; i < numProcesses; i++)
+//            {
+//                myThreads[i].start();
+//            }
+//            
+//        } catch (Exception e) {
+//            System.err.println("Could not create registry exception: " + e.toString()); 
+//            e.printStackTrace(); 
+//        } 
     }
 
 }
@@ -45,6 +45,13 @@ class MyProcess implements Runnable
     }
 
     public void run() {
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        
         while(true) {
             int wait = (int) (Math.random()*3000);
             try {
