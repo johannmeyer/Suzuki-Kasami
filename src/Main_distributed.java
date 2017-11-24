@@ -20,7 +20,7 @@ public class Main_distributed {
         for(int i = 0; i < args.length/2; i++)
         {            
             ip[i] = args[i];
-            np[i] = Integer.parseInt(args[i*2]);
+            np[i] = Integer.parseInt(args[args.length/2+i]);
             numProcesses += np[i];
         }
                
