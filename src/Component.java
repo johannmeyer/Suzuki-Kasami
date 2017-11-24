@@ -48,20 +48,29 @@ public class Component extends UnicastRemoteObject implements Component_RMI {
 
     @Override
     public synchronized void receiveRequest(int requesting_id, int requestNumber) {
+        // Update requests
         requests[requesting_id] = requestNumber;
+        
+        // Check if token present and not in critical section or
+        // that request has not been granted already
         if(token_present && !critical && requestNumber > grants[requesting_id]) {
             sendToken(requesting_id);
         }
-        println("Received request from " + requesting_id + "\t" + "Current requests: " + Arrays.toString(requests));
+        
     }
 
     @Override
     public void receiveToken(int[] grants) {
+        // Grant current process
         grants[id] = requests[id];
+        // Update local granted array
         this.grants = grants;
+        
         println("Token received");
         token_present = true;
         criticalSection();
+        
+        // Once done check if another process needs it
         checkRequests();
     }
     
@@ -69,13 +78,16 @@ public class Component extends UnicastRemoteObject implements Component_RMI {
      * Broadcast request to all other components.
      */
     public void sendRequest() throws MalformedURLException, RemoteException, NotBoundException {
+        // There is a new request
         requests[id]++;
-        println("Broadcasting request number " + requests[id]);
+        
+        println("Broadcasting request number " + Arrays.toString(requests));
+        
+        // Broadcast request to all processes including current process
+        // to check if they have the token
         for(int i = 0; i < numberOfProcesses; i++) {
-            if(i != id) {
-                Component_RMI dest = (Component_RMI) Naming.lookup(naming + i);
-                dest.receiveRequest(id, requests[id]);
-            }
+            Component_RMI dest = (Component_RMI) Naming.lookup(naming + i);
+            dest.receiveRequest(id, requests[id]);
         }
     }
     
@@ -97,15 +109,15 @@ public class Component extends UnicastRemoteObject implements Component_RMI {
      * Check the request array for requests that can be fulfilled.
      */
     private void checkRequests() {
-        for(int i = 1; i < numberOfProcesses; i++) {
-            int checkReq = id + i;
+        for(int i = 1; i < numberOfProcesses+1; i++) {
             
-            if(checkReq >= numberOfProcesses) {
-                checkReq = checkReq - numberOfProcesses;
-            }
+            // Cyclic check
+            int checkReq = (id + i)%numberOfProcesses;
             
+            // Send to first process with outstanding request
             if(requests[checkReq] > grants[checkReq]) {
                 sendToken(checkReq);
+                break;
             }
         }
     }
