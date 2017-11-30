@@ -6,6 +6,7 @@ import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Scanner;
 
 
 public class Main_distributed {
@@ -54,6 +55,10 @@ public class Main_distributed {
                 }
             }
             
+            System.out.println("Press a random key to start");
+            Scanner scan = new Scanner(System.in);
+            scan.next();
+
             // Make processes send random requests
             for (int i = 0; i < numProcesses; i++)
             {
