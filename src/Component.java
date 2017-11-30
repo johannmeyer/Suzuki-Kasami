@@ -83,7 +83,7 @@ public class Component extends UnicastRemoteObject implements Component_RMI {
         // There is a new request
         requests[id]++;
         
-        println("Broadcasting request number " + Arrays.toString(requests));
+        println("Broadcasting request");
         
         // Broadcast request to all processes including current process
         // to check if they have the token
@@ -99,6 +99,9 @@ public class Component extends UnicastRemoteObject implements Component_RMI {
      */
     private void sendToken(int send_id) {
         try {
+	    println("Requests: " + Arrays.toString(requests));
+	    println("Grants: " + Arrays.toString(grants));
+
             String destName = "//" + ips[send_id] + ":1099/" + naming + send_id;
             Component_RMI dest = (Component_RMI) Naming.lookup(destName);
             token_present = false;
