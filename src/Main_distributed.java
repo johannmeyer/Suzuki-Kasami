@@ -23,6 +23,8 @@ public class Main_distributed {
             ip[i] = args[i];
             np[i] = Integer.parseInt(args[args.length/2+i]);
             numProcesses += np[i];
+            if (args[i].equals("localhost"))
+                local_ip_idx = i;
         }
                
         if (System.getSecurityManager() == null) {
@@ -40,35 +42,40 @@ public class Main_distributed {
         }
         
         
-        Thread[] myThreads = new Thread[numProcesses];
+        Thread[] myThreads = new Thread[np[local_ip_idx]];
         try{
             // Create Registry
             Registry registry = LocateRegistry.createRegistry(1099);
-
-            // Create processes
-            for (int i = 0; i < numProcesses; i++)
-            {
-                if(dests[i].equals("localhost")) {
-                    Component c = new Component(i, numProcesses, dests);
-                    MyProcess p = new MyProcess(c);
-                    myThreads[i] = new Thread(p);
-                }
-            }
-            
-            System.out.println("Press a random key to start");
-            Scanner scan = new Scanner(System.in);
-            scan.next();
-
-            // Make processes send random requests
-            for (int i = 0; i < numProcesses; i++)
-            {
-                myThreads[i].start();
-            }
-            
         } catch (Exception e) {
             System.err.println("Could not create registry exception: " + e.toString()); 
             e.printStackTrace(); 
         } 
+        
+        // Create processes
+        int counterLocal = 0;
+        for (int i = 0; i < numProcesses; i++)
+        {
+            if(dests[i].equals("localhost")) {
+                Component c;
+                try {
+                    c = new Component(i, numProcesses, dests);
+                    MyProcess p = new MyProcess(c);
+                    myThreads[counterLocal++] = new Thread(p);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        System.out.println("Press enter to continue");
+        Scanner scan = new Scanner(System.in);
+        scan.nextLine();
+
+        // Make processes send random requests
+        for (int i = 0; i < np[local_ip_idx]; i++)
+        {
+            myThreads[i].start();
+        }        
     }
 
 }

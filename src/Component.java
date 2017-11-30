@@ -88,7 +88,7 @@ public class Component extends UnicastRemoteObject implements Component_RMI {
         // Broadcast request to all processes including current process
         // to check if they have the token
         for(int i = 0; i < numberOfProcesses; i++) {
-            String destName = "rmi://" + ips[i] + ":1099/" + naming + i;
+            String destName = "//" + ips[i] + ":1099/" + naming + i;
             Component_RMI dest = (Component_RMI) Naming.lookup(destName);
             dest.receiveRequest(id, requests[id]);
         }
@@ -99,7 +99,7 @@ public class Component extends UnicastRemoteObject implements Component_RMI {
      */
     private void sendToken(int send_id) {
         try {
-            String destName = "rmi://" + ips[send_id] + ":1099/" + naming + send_id;
+            String destName = "//" + ips[send_id] + ":1099/" + naming + send_id;
             Component_RMI dest = (Component_RMI) Naming.lookup(destName);
             token_present = false;
             println("Sending token to " + send_id);

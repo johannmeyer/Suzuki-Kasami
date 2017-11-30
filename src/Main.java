@@ -44,14 +44,7 @@ class MyProcess implements Runnable
         this.c = c;
     }
 
-    public void run() {
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        
+    public void run() {        
         while(true) {
             int wait = (int) (Math.random()*3000);
             try {
